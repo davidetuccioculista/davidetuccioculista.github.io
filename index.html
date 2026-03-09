@@ -56,6 +56,56 @@
     }
     .nav-cta:hover { background: #3a3a3c !important; }
 
+    /* ── MOBILE NAV ── */
+    .nav-mobile-btn {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      padding: 8px; color: var(--black);
+    }
+    .nav-mobile-right {
+      display: none;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-mobile-cta {
+      background: var(--black); color: var(--white);
+      padding: 8px 16px; border-radius: 980px;
+      font-size: 13px; font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Menu mobile a tendina */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--nav-height);
+      left: 0; right: 0;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      z-index: 999;
+      padding: 16px 24px 24px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      text-decoration: none; color: var(--black);
+      font-size: 17px; font-weight: 400;
+      padding: 13px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: block;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a.mobile-menu-cta {
+      background: var(--black); color: var(--white);
+      padding: 14px 24px; border-radius: 980px;
+      font-weight: 500; text-align: center;
+      margin-top: 12px; border: none;
+    }
+
     /* ── HERO ── */
     .hero {
       height: 92vh; min-height: 560px;
@@ -257,9 +307,10 @@
     .footer-col ul li a:hover { color: var(--black); }
     .footer-bottom {
       display: flex; justify-content: space-between; align-items: center;
-      margin-top: 24px;
+      margin-top: 24px; flex-wrap: wrap; gap: 12px;
     }
     .footer-bottom p { font-size: 12px; color: var(--gray); }
+    .footer-bottom-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -268,30 +319,72 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
+      /* Nav */
       nav { padding: 0 20px; }
       .nav-left, .nav-right { display: none; }
+      .nav-logo { justify-self: start; }
       .nav-logo img { height: 38px; }
+      .nav-mobile-right { display: flex; justify-self: end; }
+      nav { grid-template-columns: auto 1fr auto; }
+
+      /* Hero */
       .hero { height: 88vh; }
+
+      /* About */
       .about { grid-template-columns: 1fr; }
       .about-photo-col { height: 420px; order: -1; }
       .about-photo-col::before {
         background: linear-gradient(to bottom, rgba(29,29,31,0) 50%, var(--black) 100%);
       }
       .about-text-col { padding: 48px 28px 64px; }
-      .services-section { padding: 80px 24px; }
+
+      /* Services */
+      .services-section { padding: 64px 20px; }
       .services-grid { grid-template-columns: 1fr; }
-      .reviews-section { padding: 80px 24px 60px; }
+
+      /* Reviews */
+      .reviews-section { padding: 64px 20px 52px; }
       .reviews-grid { grid-template-columns: 1fr; }
+
+      /* CTA */
       .cta-banner { margin: 40px 16px 60px; padding: 56px 28px; border-radius: 20px; }
-      footer { padding: 40px 24px 28px; }
-      .footer-inner { grid-template-columns: 1fr 1fr; }
+
+      /* Footer */
+      footer { padding: 40px 20px 28px; }
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .footer-brand { padding-bottom: 8px; }
+      .footer-cols-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .footer-bottom-links { gap: 16px; }
     }
   </style>
 </head>
 <body>
 
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="servizi/index.html">Servizi</a>
+  <a href="contatti/index.html">Contatti</a>
+  <a href="prenotazioni/index.html" class="mobile-menu-cta">Prenota una visita</a>
+</div>
+
 <!-- NAV -->
 <nav>
+  <a href="index.html" class="nav-logo">
+    <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
+  </a>
   <div class="nav-left">
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
@@ -299,13 +392,22 @@
       <li><a href="contatti/index.html">Contatti</a></li>
     </ul>
   </div>
-  <a href="index.html" class="nav-logo">
-    <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
-  </a>
   <div class="nav-right">
     <ul class="nav-links">
       <li><a href="prenotazioni/index.html" class="nav-cta">Prenota</a></li>
     </ul>
+  </div>
+  <!-- Mobile right: CTA + hamburger -->
+  <div class="nav-mobile-right">
+    <a href="prenotazioni/index.html" class="nav-mobile-cta">Prenota</a>
+    <button class="nav-mobile-btn" id="menuToggle" aria-label="Menu">
+      <svg id="iconMenu" width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="iconClose" width="22" height="22" viewBox="0 0 22 22" fill="none" style="display:none;">
+        <path d="M4 4l14 14M18 4L4 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
@@ -313,7 +415,7 @@
 <section class="hero">
   <p class="hero-eyebrow">Dott. Davide Tucci</p>
   <h1>Il tuo punto di riferimento<br/><span>per il benessere visivo</span></h1>
-  <p class="hero-sub">Gestione della salute oculare a 360°, con percorsi diagnostici  e terapeutici personalizzati.</p>
+  <p class="hero-sub">Gestione della salute oculare a 360°, con percorsi diagnostici e terapeutici personalizzati.</p>
   <div class="hero-actions">
     <a href="prenotazioni/index.html" class="btn-primary">Prenota una visita</a>
     <a href="servizi/index.html" class="btn-secondary">Scopri i servizi</a>
@@ -348,7 +450,7 @@
   <div class="services-grid">
     <div class="service-card reveal">
       <div class="service-name">Visita Oculistica Completa</div>
-      <div class="service-desc">Valutazione  completa dell'occhio e della funzione visiva, comprensiva di esame della refrazione,  del segmento anteriore, della presisone intraoculare e del fondo oculare.</div>
+      <div class="service-desc">Valutazione completa dell'occhio e della funzione visiva, comprensiva di esame della refrazione, del segmento anteriore, della pressione intraoculare e del fondo oculare.</div>
     </div>
     <div class="service-card reveal">
       <div class="service-name">Chirurgia della Cataratta</div>
@@ -414,25 +516,65 @@
   <p class="section-body">Scegli il giorno e l'orario più comodi per te. La prenotazione è rapida e immediata.</p>
   <a href="prenotazioni/index.html" class="btn-white">Prenota una visita</a>
 </div>
+
 <!-- COOKIE BANNER -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;width:calc(100% - 48px);max-width:680px;">
   <div style="background:rgba(28,28,30,0.92);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-radius:20px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 8px 40px rgba(0,0,0,0.28);">
     <div style="flex:1;min-width:200px;">
-      <p style="font-size:14px;font-weight:600;color:#ffffff;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Questo sito utilizza cookie</p>
-      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Utilizziamo cookie tecnici e di terze parti (Google Maps) per il corretto funzionamento del sito. <a href="/cookie/index.html" style="color:rgba(255,255,255,0.85);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);">Cookie Policy</a></p>
+      <p style="font-size:14px;font-weight:600;color:#ffffff;margin-bottom:4px;">Questo sito utilizza cookie</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;">Utilizziamo cookie tecnici e di terze parti (Google Maps) per il corretto funzionamento del sito. <a href="cookie/index.html" style="color:rgba(255,255,255,0.85);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);">Cookie Policy</a></p>
     </div>
     <div style="display:flex;gap:10px;flex-shrink:0;">
-      <button onclick="rifiutaCookie()" style="background:rgba(255,255,255,0.12);color:#ffffff;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Rifiuta</button>
-      <button onclick="accettaCookie()" style="background:#ffffff;color:#1d1d1f;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Accetta</button>
+      <button onclick="rifiutaCookie()" style="background:rgba(255,255,255,0.12);color:#ffffff;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">Rifiuta</button>
+      <button onclick="accettaCookie()" style="background:#ffffff;color:#1d1d1f;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Accetta</button>
     </div>
   </div>
 </div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
+      <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
+    </div>
+    <!-- Su mobile questi due col vanno in griglia 2 colonne -->
+    <div class="footer-cols-row" style="display:contents;">
+      <div class="footer-col">
+        <h4>Navigazione</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="servizi/index.html">Servizi</a></li>
+          <li><a href="prenotazioni/index.html">Prenotazioni</a></li>
+          <li><a href="contatti/index.html">Contatti</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Servizi</h4>
+        <ul>
+          <li><a href="servizi/index.html">Visita Oculistica</a></li>
+          <li><a href="servizi/index.html">Chirurgia Cataratta</a></li>
+          <li><a href="servizi/index.html">OCT Retinico</a></li>
+          <li><a href="servizi/index.html">Glaucoma</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
+    <div class="footer-bottom-links">
+      <a href="privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Privacy Policy</a>
+      <a href="cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Cookie Policy</a>
+      <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
+    </div>
+  </div>
+</footer>
+
 <script>
+  // Cookie banner
   (function() {
-    const consent = localStorage.getItem("cookieConsent");
-    if (!consent) {
+    if (!localStorage.getItem("cookieConsent"))
       document.getElementById("cookieBanner").style.display = "block";
-    }
   })();
   function accettaCookie() {
     localStorage.setItem("cookieConsent", "accepted");
@@ -442,45 +584,29 @@
     localStorage.setItem("cookieConsent", "rejected");
     document.getElementById("cookieBanner").style.display = "none";
   }
-</script>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
-      <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
-    </div>
-    <div class="footer-col">
-      <h4>Navigazione</h4>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="servizi/index.html">Servizi</a></li>
-        <li><a href="prenotazioni/index.html">Prenotazioni</a></li>
-        <li><a href="contatti/index.html">Contatti</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Servizi</h4>
-      <ul>
-        <li><a href="servizi/index.html">Visita Oculistica</a></li>
-        <li><a href="servizi/index.html">Chirurgia Cataratta</a></li>
-        <li><a href="servizi/index.html">OCT Retinico</a></li>
-        <li><a href="servizi/index.html">Glaucoma</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
-    <div style="display:flex;gap:20px;align-items:center;">
-      <a href="privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Privacy Policy</a>
-      <a href="cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Cookie Policy</a>
-      <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
-    </div>
-  </div>
-</footer>
+  // Mobile menu
+  const menuToggle = document.getElementById("menuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const iconMenu   = document.getElementById("iconMenu");
+  const iconClose  = document.getElementById("iconClose");
 
-<script>
+  menuToggle.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.toggle("open");
+    iconMenu.style.display  = isOpen ? "none"  : "block";
+    iconClose.style.display = isOpen ? "block" : "none";
+  });
+
+  // Chiudi menu al click su un link
+  mobileMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("open");
+      iconMenu.style.display  = "block";
+      iconClose.style.display = "none";
+    });
+  });
+
+  // Reveal on scroll
   const reveals = document.querySelectorAll(".reveal");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
