@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servizi — Dr. Davide Tucci</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #1d1d1f; --gray: #6e6e73; --light-gray: #f5f5f7; --white: #ffffff; --nav-height: 64px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: var(--white); -webkit-font-smoothing: antialiased; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); z-index: 1000; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 48px; }
+    .nav-left { display: flex; align-items: center; }
+    .nav-logo { justify-self: center; display: flex; align-items: center; }
+    .nav-logo img { height: 44px; width: auto; }
+    .nav-right { display: flex; justify-content: flex-end; }
+    .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--black); font-size: 13px; font-weight: 400; opacity: 0.85; transition: opacity 0.2s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a.active { font-weight: 600; opacity: 1; }
+    .nav-cta { background: var(--black); color: var(--white) !important; padding: 8px 18px; border-radius: 980px; font-weight: 500 !important; opacity: 1 !important; transition: background 0.2s !important; }
+    .nav-cta:hover { background: #3a3a3c !important; }
+
+    .hero { padding: calc(var(--nav-height) + 80px) 24px 80px; text-align: center; max-width: 720px; margin: 0 auto; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .section-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin-bottom: 16px; display: block; }
+    .hero h1 { font-size: clamp(36px, 5.5vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; color: var(--black); opacity: 0; animation: fadeUp 0.8s ease forwards 0.1s; }
+    .hero h1 span { color: var(--gray); font-weight: 300; }
+    .hero-sub { font-size: clamp(16px, 1.8vw, 19px); color: var(--gray); margin-top: 20px; line-height: 1.65; opacity: 0; animation: fadeUp 0.8s ease forwards 0.25s; }
+
+    .services-section { padding: 20px 24px 120px; max-width: 1060px; margin: 0 auto; }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .service-card { background: var(--light-gray); border-radius: 20px; padding: 40px 32px; display: flex; flex-direction: column; gap: 12px; transition: transform 0.25s, box-shadow 0.25s; }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .service-name { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--black); line-height: 1.2; }
+    .service-desc { font-size: 14px; color: var(--gray); line-height: 1.7; flex: 1; }
+    .service-cta { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 13px; font-weight: 500; color: var(--black); text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.2); padding-bottom: 2px; width: fit-content; transition: border-color 0.2s; }
+    .service-cta:hover { border-color: var(--black); }
+
+    .cta-banner { background: var(--black); border-radius: 24px; margin: 0 24px 80px; padding: 80px 64px; text-align: center; }
+    .cta-banner .section-eyebrow { color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+    .cta-banner .section-title { font-size: clamp(26px, 3.5vw, 44px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; color: var(--white); margin-bottom: 16px; }
+    .cta-banner .section-body { font-size: 16px; color: rgba(255,255,255,0.6); margin: 0 auto 40px; max-width: 500px; line-height: 1.8; }
+    .btn-white { background: var(--white); color: var(--black); text-decoration: none; padding: 14px 32px; border-radius: 980px; font-size: 15px; font-weight: 600; display: inline-block; transition: opacity 0.2s, transform 0.2s; }
+    .btn-white:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── FOOTER corretto ── */
+    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 52px 80px 36px; }
+    .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .footer-brand img { height: 32px; margin-bottom: 14px; display: block; }
+    .footer-brand p { font-size: 13px; color: var(--gray); line-height: 1.8; }
+    .footer-brand a { color: inherit; }
+    .footer-col h4 { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a { font-size: 13px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--black); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+    .footer-bottom p { font-size: 12px; color: var(--gray); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1024px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { nav { padding: 0 20px; } .nav-left, .nav-right { display: none; } .nav-logo img { height: 38px; } .services-grid { grid-template-columns: 1fr; } .cta-banner { margin: 0 16px 60px; padding: 56px 28px; } footer { padding: 40px 20px 28px; } .footer-inner { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- COOKIE BANNER -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;width:calc(100% - 48px);max-width:680px;">
+  <div style="background:rgba(28,28,30,0.92);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-radius:20px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 8px 40px rgba(0,0,0,0.28);">
+    <div style="flex:1;min-width:200px;">
+      <p style="font-size:14px;font-weight:600;color:#ffffff;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Questo sito utilizza cookie</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Utilizziamo cookie tecnici e di terze parti (Google Maps) per il corretto funzionamento del sito. <a href="../cookie/index.html" style="color:rgba(255,255,255,0.85);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);">Cookie Policy</a></p>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button onclick="rifiutaCookie()" style="background:rgba(255,255,255,0.12);color:#ffffff;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Rifiuta</button>
+      <button onclick="accettaCookie()" style="background:#ffffff;color:#1d1d1f;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Accetta</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Servizi</a></li>
+      <li><a href="../contatti/index.html">Contatti</a></li>
+    </ul>
+  </div>
+  <a href="../index.html" class="nav-logo">
+    <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci" />
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="../prenotazioni/index.html" class="nav-cta">Prenota</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="section-eyebrow" style="opacity:0;animation:fadeUp 0.8s ease forwards 0s">Salute degli occhi a 360°</span>
+  <h1>Di cosa mi occupo<br/><span></span></h1>
+  <p class="hero-sub">Diagnosi accurate, percorsi terapeutici personalizzati e un approccio centrato sulla persona per la salute dei tuoi occhi.</p>
+</div>
+
+<!-- SERVIZI -->
+<section class="services-section">
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <h2 class="service-name">Visita Oculistica Completa</h2>
+      <p class="service-desc">Valutazione completa dell'occhio e della funzione visiva, comprensiva di esame della refrazione, del segmento anteriore, della pressione intraoculare e del fondo oculare.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Chirurgia della Cataratta</h2>
+      <p class="service-desc">Consulenza pre-operatoria finalizzata alla scelta del miglior percorso di trattamento, gestione dell'intero iter chirurgico e follow-up post-operatorio.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Miopia, Ipermetropia e Astigmatismo</h2>
+      <p class="service-desc">Diagnosi e correzione dei principali difetti refrattivi attraverso un esame della refrazione accurato, con prescrizione per occhiali o lenti a contatto e consulenza per eventuale correzione chirurgica.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Glaucoma</h2>
+      <p class="service-desc">Valutazione completa per la diagnosi e il monitoraggio del glaucoma, con definizione del percorso terapeutico più appropriato e controlli periodici per valutare l'efficacia della terapia nel tempo.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Maculopatia</h2>
+      <p class="service-desc">Diagnosi e monitoraggio delle patologie maculari attraverso valutazione clinica accurata e strumentale, con definizione del percorso terapeutico più adeguato e controlli periodici.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Patologie Corneali</h2>
+      <p class="service-desc">Diagnosi e gestione delle principali patologie della cornea, tra le quali cheratocono, distrofie corneali e ulcere corneali, con indicazione al più adeguato percorso diagnostico e terapeutico, anche chirurgico.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Occhio Secco</h2>
+      <p class="service-desc">Valutazione completa del film lacrimale per la sindrome dell'occhio secco, con definizione della terapia più adeguata — farmacologica o fisica — per bruciore, lacrimazione e sensazione di corpo estraneo.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">Pressione Intraoculare</h2>
+      <p class="service-desc">Misurazione della pressione all'interno dell'occhio, controllo fondamentale per la diagnosi precoce del glaucoma e per il monitoraggio di pazienti a rischio o già in terapia.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+    <div class="service-card reveal">
+      <h2 class="service-name">OCT Retinico</h2>
+      <p class="service-desc">Tomografia a coerenza ottica non invasiva ad altissima risoluzione degli strati retinici. Indispensabile per la diagnosi e il follow-up di maculopatie, glaucoma, edema retinico e neuropatie ottiche.</p>
+      <a href="../prenotazioni/index.html" class="service-cta">Prenota ora una visita &#8594;</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner reveal">
+  <p class="section-eyebrow">Prenota ora</p>
+  <h2 class="section-title">Prenditi cura della<br/>tua vista oggi.</h2>
+  <p class="section-body">Scegli il giorno e l'orario più comodi per te. La prenotazione è rapida e immediata.</p>
+  <a href="../prenotazioni/index.html" class="btn-white">Prenota una visita</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci" />
+      <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigazione</h4>
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="index.html">Servizi</a></li>
+        <li><a href="../prenotazioni/index.html">Prenotazioni</a></li>
+        <li><a href="../contatti/index.html">Contatti</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Servizi</h4>
+      <ul>
+        <li><a href="index.html">Visita Oculistica</a></li>
+        <li><a href="index.html">Chirurgia Cataratta</a></li>
+        <li><a href="index.html">OCT Retinico</a></li>
+        <li><a href="index.html">Glaucoma</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
+    <div style="display:flex;gap:20px;align-items:center;">
+      <a href="../privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Privacy Policy</a>
+      <a href="../cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Cookie Policy</a>
+      <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    const consent = localStorage.getItem("cookieConsent");
+    if (!consent) document.getElementById("cookieBanner").style.display = "block";
+  })();
+  function accettaCookie() {
+    localStorage.setItem("cookieConsent", "accepted");
+    document.getElementById("cookieBanner").style.display = "none";
+  }
+  function rifiutaCookie() {
+    localStorage.setItem("cookieConsent", "rejected");
+    document.getElementById("cookieBanner").style.display = "none";
+  }
+
+  const reveals = document.querySelectorAll(".reveal");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

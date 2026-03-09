@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cancella prenotazione — Dott. Davide Tucci</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #1d1d1f; --gray: #6e6e73; --light-gray: #f5f5f7; --white: #ffffff; --nav-height: 64px; --radius: 20px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: var(--white); -webkit-font-smoothing: antialiased; }
+
+    /* ── NAV ── */
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); z-index: 1000; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 48px; }
+    .nav-left { display: flex; align-items: center; }
+    .nav-logo { justify-self: center; display: flex; align-items: center; }
+    .nav-logo img { height: 44px; width: auto; }
+    .nav-right { display: flex; justify-content: flex-end; }
+    .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--black); font-size: 13px; font-weight: 400; opacity: 0.85; transition: opacity 0.2s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta { background: var(--black); color: var(--white) !important; padding: 8px 18px; border-radius: 980px; font-weight: 500 !important; opacity: 1 !important; transition: background 0.2s !important; }
+    .nav-cta:hover { background: #3a3a3c !important; }
+
+    /* ── PAGE ── */
+    .page-header { padding: calc(var(--nav-height) + 64px) 24px 48px; text-align: center; }
+    .page-header .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; }
+    .page-header h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+    .page-header p { font-size: 17px; color: var(--gray); margin-top: 16px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+    /* ── CARD ── */
+    .wrap { max-width: 520px; margin: 0 auto; padding: 0 24px 100px; }
+    .card { background: var(--light-gray); border-radius: var(--radius); padding: 36px 32px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: 500; color: var(--gray); }
+    .form-group input { background: var(--white); border: 2px solid transparent; border-radius: 12px; padding: 13px 16px; font-size: 15px; font-family: inherit; color: var(--black); outline: none; transition: border-color 0.2s; width: 100%; }
+    .form-group input:focus { border-color: var(--black); }
+    .btn-search { width: 100%; background: var(--black); color: var(--white); border: none; padding: 14px 32px; border-radius: 980px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 8px; transition: background 0.2s, opacity 0.2s; }
+    .btn-search:hover { background: #3a3a3c; }
+    .btn-search:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── RESULT ── */
+    .result-box { display: none; margin-top: 28px; background: var(--white); border-radius: 16px; padding: 24px 28px; border: 2px solid transparent; transition: border-color 0.2s; }
+    .result-box.visible { display: block; }
+    .result-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .result-row:last-of-type { border-bottom: none; }
+    .result-row .lbl { font-size: 13px; color: var(--gray); }
+    .result-row .val { font-size: 14px; font-weight: 500; text-align: right; max-width: 60%; }
+    .btn-cancel { width: 100%; background: #c62828; color: var(--white); border: none; padding: 14px 32px; border-radius: 980px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 20px; transition: background 0.2s, opacity 0.2s; }
+    .btn-cancel:hover { background: #b71c1c; }
+    .btn-cancel:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── MESSAGES ── */
+    .msg { display: none; border-radius: 12px; padding: 14px 16px; font-size: 14px; margin-top: 16px; }
+    .msg.visible { display: block; }
+    .msg.error { background: #fff2f2; border: 1px solid #ffcdd2; color: #c62828; }
+    .msg.info  { background: #f0f4ff; border: 1px solid #c5d3ff; color: #1a3db5; }
+    .spinner-inline { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SUCCESS ── */
+    .success-screen { display: none; text-align: center; padding: 80px 24px; }
+    .success-screen.visible { display: block; }
+    .success-icon { font-size: 56px; margin-bottom: 24px; }
+    .success-screen h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .success-screen p { font-size: 17px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+    .success-screen a { display: inline-block; margin-top: 36px; background: var(--black); color: var(--white); text-decoration: none; padding: 14px 28px; border-radius: 980px; font-size: 15px; font-weight: 500; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 52px 80px 36px; }
+    .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .footer-brand img { height: 32px; margin-bottom: 14px; display: block; }
+    .footer-brand p { font-size: 13px; color: var(--gray); line-height: 1.8; }
+    .footer-brand a { color: inherit; }
+    .footer-col h4 { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a { font-size: 13px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--black); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+    .footer-bottom p { font-size: 12px; color: var(--gray); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-left, .nav-right { display: none; }
+      .nav-logo img { height: 38px; }
+      footer { padding: 40px 24px 28px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../servizi/index.html">Servizi</a></li>
+      <li><a href="../contatti/index.html">Contatti</a></li>
+    </ul>
+  </div>
+  <a href="../index.html" class="nav-logo">
+    <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci" />
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-cta">Prenota</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <p class="eyebrow">Gestione prenotazione</p>
+  <h1>Annulla la tua visita</h1>
+  <p>Inserisci il numero di telefono e il codice ricevuto al momento della prenotazione.</p>
+</div>
+
+<div class="wrap">
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🗑️</div>
+    <h2>Prenotazione annullata</h2>
+    <p>La tua prenotazione è stata annullata correttamente. Puoi prenotare una nuova visita quando vuoi.</p>
+    <a href="index.html">Prenota una nuova visita</a>
+  </div>
+
+  <div id="mainContent">
+    <div class="card">
+      <div class="form-group">
+        <label>Numero di telefono</label>
+        <input type="tel" id="inputTelefono" placeholder="numero di telefono indicato in fase di prenotazione" autocomplete="tel"/>
+      </div>
+      <div class="form-group">
+        <label>Codice prenotazione</label>
+        <input type="text" id="inputCodice" placeholder="VS-20260304-K3X9" autocomplete="off" style="text-transform:uppercase;"/>
+      </div>
+      <div class="msg error" id="msgError"></div>
+      <div class="msg info"  id="msgInfo"></div>
+      <button class="btn-search" id="btnSearch" onclick="cercaPrenotazione()">Cerca prenotazione</button>
+
+      <div class="result-box" id="resultBox">
+        <div class="result-row"><span class="lbl">Paziente</span><span class="val" id="rPaziente">—</span></div>
+        <div class="result-row"><span class="lbl">Visita</span><span class="val" id="rVisita">—</span></div>
+        <div class="result-row"><span class="lbl">Data e ora</span><span class="val" id="rData">—</span></div>
+        <div class="result-row"><span class="lbl">Sede</span><span class="val" id="rSede">—</span></div>
+        <div class="result-row"><span class="lbl">Stato</span><span class="val" id="rStato">—</span></div>
+        <button class="btn-cancel" id="btnCancel" onclick="cancellaPrenotazione()">Annulla prenotazione</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- COOKIE BANNER -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;width:calc(100% - 48px);max-width:680px;">
+  <div style="background:rgba(28,28,30,0.92);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-radius:20px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 8px 40px rgba(0,0,0,0.28);">
+    <div style="flex:1;min-width:200px;">
+      <p style="font-size:14px;font-weight:600;color:#ffffff;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Questo sito utilizza cookie</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">Utilizziamo cookie tecnici e di terze parti (Google Maps) per il corretto funzionamento del sito. <a href="/cookie/index.html" style="color:rgba(255,255,255,0.85);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);">Cookie Policy</a></p>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button onclick="rifiutaCookie()" style="background:rgba(255,255,255,0.12);color:#ffffff;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Rifiuta</button>
+      <button onclick="accettaCookie()" style="background:#ffffff;color:#1d1d1f;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Accetta</button>
+    </div>
+  </div>
+</div>
+<script>
+  (function() {
+    const consent = localStorage.getItem("cookieConsent");
+    if (!consent) {
+      document.getElementById("cookieBanner").style.display = "block";
+    }
+  })();
+  function accettaCookie() {
+    localStorage.setItem("cookieConsent", "accepted");
+    document.getElementById("cookieBanner").style.display = "none";
+  }
+  function rifiutaCookie() {
+    localStorage.setItem("cookieConsent", "rejected");
+    document.getElementById("cookieBanner").style.display = "none";
+  }
+</script>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci" />
+      <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigazione</h4>
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../servizi/index.html">Servizi</a></li>
+        <li><a href="index.html">Prenotazioni</a></li>
+        <li><a href="../contatti/index.html">Contatti</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Servizi</h4>
+      <ul>
+        <li><a href="../servizi/index.html">Visita Oculistica</a></li>
+        <li><a href="../servizi/index.html">Chirurgia Cataratta</a></li>
+        <li><a href="../servizi/index.html">OCT Retinico</a></li>
+        <li><a href="../servizi/index.html">Glaucoma</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
+    <div style="display:flex;gap:20px;align-items:center;">
+      <a href="../privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Privacy Policy</a>
+      <a href="../cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#1d1d1f'" onmouseout="this.style.color='#6e6e73'">Cookie Policy</a>
+      <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
+    </div>
+  </div>
+
+</footer>
+
+<script>
+const WORKER_URL = "https://booking-worker.davidetuccioculista.workers.dev";
+let prenotazioneTrovata = null;
+
+document.getElementById("inputCodice").addEventListener("input", function() {
+  this.value = this.value.toUpperCase();
+});
+
+function showMsg(type, text) {
+  document.getElementById("msgError").classList.remove("visible");
+  document.getElementById("msgInfo").classList.remove("visible");
+  if (text) {
+    const el = document.getElementById(type === "error" ? "msgError" : "msgInfo");
+    el.textContent = text;
+    el.classList.add("visible");
+  }
+}
+
+async function cercaPrenotazione() {
+  const tel    = document.getElementById("inputTelefono").value.trim();
+  const codice = document.getElementById("inputCodice").value.trim().toUpperCase();
+  showMsg("", "");
+  document.getElementById("resultBox").classList.remove("visible");
+  prenotazioneTrovata = null;
+
+  if (!tel || !codice) { showMsg("error", "Inserisci sia il numero di telefono che il codice prenotazione."); return; }
+
+  const btn = document.getElementById("btnSearch");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner-inline"></span>Ricerca in corso…`;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/cancel/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ telefono: tel, codicePrenotazione: codice })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Errore del server");
+
+    if (!data.records || data.records.length === 0) {
+      showMsg("error", "Nessuna prenotazione trovata con questi dati. Verifica telefono e codice.");
+      return;
+    }
+
+    const r = data.records[0];
+    const f = r.fields;
+    prenotazioneTrovata = { recordName: r.recordName, recordChangeTag: r.recordChangeTag };
+
+    const dataOra = f.dataOra?.value ? new Date(f.dataOra.value) : null;
+    const dataStr = dataOra
+      ? dataOra.toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long", year:"numeric" }) +
+        " alle " + String(dataOra.getHours()).padStart(2,"0") + ":" + String(dataOra.getMinutes()).padStart(2,"0")
+      : "—";
+
+    document.getElementById("rPaziente").textContent = `${f.nomePaziente?.value || ""} ${f.cognomePaziente?.value || ""}`.trim() || "—";
+    document.getElementById("rVisita").textContent   = f.prestazioneNome?.value || "—";
+    document.getElementById("rData").textContent     = dataStr;
+    document.getElementById("rSede").textContent     = [f.centroNome?.value, f.centroLuogo?.value].filter(Boolean).join(" — ") || "—";
+    document.getElementById("rStato").textContent    = f.stato?.value || "—";
+    document.getElementById("resultBox").classList.add("visible");
+
+  } catch(e) {
+    showMsg("error", e.message || "Errore durante la ricerca.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "Cerca prenotazione";
+  }
+}
+
+async function cancellaPrenotazione() {
+  if (!prenotazioneTrovata) return;
+
+  if (!confirm("Sei sicuro di voler annullare questa prenotazione? L'operazione non è reversibile.")) return;
+
+  const btn = document.getElementById("btnCancel");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner-inline"></span>Annullamento in corso…`;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/cancel/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recordName:      prenotazioneTrovata.recordName,
+        recordChangeTag: prenotazioneTrovata.recordChangeTag
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Errore del server");
+
+    document.getElementById("mainContent").style.display = "none";
+    document.getElementById("successScreen").classList.add("visible");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  } catch(e) {
+    showMsg("error", "Errore durante l'annullamento. Riprova o contattaci direttamente.");
+    btn.disabled = false;
+    btn.innerHTML = "Annulla prenotazione";
+  }
+}
+</script>
+</body>
+</html>

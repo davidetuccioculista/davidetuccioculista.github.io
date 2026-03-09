@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cookie Policy — Dr. Davide Tucci</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #1d1d1f; --gray: #6e6e73; --light-gray: #f5f5f7; --white: #ffffff; --nav-height: 64px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: var(--white); -webkit-font-smoothing: antialiased; }
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); z-index: 1000; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 48px; }
+    .nav-left { display: flex; align-items: center; }
+    .nav-logo { justify-self: center; display: flex; align-items: center; }
+    .nav-logo img { height: 44px; width: auto; }
+    .nav-right { display: flex; justify-content: flex-end; }
+    .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--black); font-size: 13px; font-weight: 400; opacity: 0.85; transition: opacity 0.2s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta { background: var(--black); color: var(--white) !important; padding: 8px 18px; border-radius: 980px; font-weight: 500 !important; opacity: 1 !important; transition: background 0.2s !important; }
+    .nav-cta:hover { background: #3a3a3c !important; }
+    .hero { padding: calc(var(--nav-height) + 80px) 24px 60px; text-align: center; max-width: 720px; margin: 0 auto; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin-bottom: 16px; display: block; }
+    .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+    .hero p { font-size: 15px; color: var(--gray); margin-top: 16px; line-height: 1.65; }
+    .doc { max-width: 720px; margin: 0 auto; padding: 64px 24px 120px; }
+    .doc h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--black); margin: 48px 0 14px; }
+    .doc h2:first-child { margin-top: 0; }
+    .doc p { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 14px; }
+    .doc ul { padding-left: 20px; margin-bottom: 14px; }
+    .doc ul li { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 6px; }
+    .doc a { color: var(--black); }
+    .doc table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    .doc table th { background: var(--light-gray); padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray); }
+    .doc table td { padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); color: #3a3a3c; line-height: 1.6; vertical-align: top; }
+    .doc table tr:last-child td { border-bottom: none; }
+    .doc .info-box { background: var(--light-gray); border-radius: 16px; padding: 24px 28px; margin: 32px 0; }
+    .doc .info-box p { margin-bottom: 6px; font-size: 14px; }
+    .doc .info-box p:last-child { margin-bottom: 0; }
+    .doc .update { font-size: 13px; color: var(--gray); margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.08); }
+    .consent-btn { display: inline-flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .consent-btn button { padding: 11px 22px; border-radius: 980px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; transition: opacity 0.2s; }
+    .btn-accept { background: var(--black); color: var(--white); }
+    .btn-reject { background: var(--light-gray); color: var(--black); }
+    .btn-accept:hover, .btn-reject:hover { opacity: 0.75; }
+    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 52px 80px 36px; }
+    .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .footer-brand img { height: 32px; margin-bottom: 14px; display: block; }
+    .footer-brand p { font-size: 13px; color: var(--gray); line-height: 1.8; }
+    .footer-brand a { color: inherit; }
+    .footer-col h4 { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; padding-left: 0; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a { font-size: 13px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--black); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom p { font-size: 12px; color: var(--gray); }
+    @media (max-width: 768px) { nav { padding: 0 20px; } .nav-left, .nav-right { display: none; } .nav-logo img { height: 38px; } footer { padding: 40px 24px 28px; } .footer-inner { grid-template-columns: 1fr 1fr; } .doc table { font-size: 12px; } .doc table th, .doc table td { padding: 10px 12px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../servizi/index.html">Servizi</a></li>
+      <li><a href="../contatti/index.html">Contatti</a></li>
+    </ul>
+  </div>
+  <a href="../index.html" class="nav-logo">
+    <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci"/>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="../prenotazioni/index.html" class="nav-cta">Prenota</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="hero">
+  <span class="eyebrow">Informativa sui cookie</span>
+  <h1>Cookie Policy</h1>
+  <p>Cosa sono i cookie e come vengono utilizzati su questo sito.</p>
+</div>
+
+<div class="doc">
+
+  <h2>Cosa sono i cookie</h2>
+  <p>I cookie sono piccoli file di testo che i siti web salvano sul dispositivo dell'utente durante la navigazione. Vengono utilizzati per far funzionare correttamente il sito, memorizzare le preferenze dell'utente e, in alcuni casi, raccogliere informazioni statistiche o di profilazione.</p>
+
+  <h2>Cookie utilizzati su questo sito</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Finalità</th>
+        <th>Durata</th>
+        <th>Fornitore</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>cookieConsent</code></td>
+        <td>Tecnico</td>
+        <td>Memorizza la preferenza dell'utente riguardo al consenso ai cookie</td>
+        <td>1 anno</td>
+        <td>Questo sito (localStorage)</td>
+      </tr>
+      <tr>
+        <td>Cookie Google Maps</td>
+        <td>Terze parti</td>
+        <td>Necessari al funzionamento della mappa interattiva nella pagina Contatti. Possono raccogliere dati tecnici come indirizzo IP e informazioni sul browser.</td>
+        <td>Variabile</td>
+        <td>Google LLC</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Questo sito <strong>non utilizza</strong> cookie di profilazione propri, cookie di tracciamento analitico (es. Google Analytics) né cookie pubblicitari.</p>
+
+  <h2>Cookie tecnici</h2>
+  <p>I cookie tecnici sono necessari al corretto funzionamento del sito e non richiedono il consenso dell'utente ai sensi dell'art. 122 del Codice Privacy e delle Linee guida del Garante. Su questo sito viene utilizzato esclusivamente un cookie tecnico in <strong>localStorage</strong> per memorizzare la tua preferenza sul consenso ai cookie.</p>
+
+  <h2>Cookie di terze parti — Google Maps</h2>
+  <p>La pagina Contatti incorpora una mappa interattiva fornita da <strong>Google Maps</strong> (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA). Il caricamento della mappa comporta la trasmissione di dati tecnici ai server di Google, indipendentemente dall'interazione dell'utente con la mappa stessa.</p>
+  <p>Google può utilizzare questi dati secondo la propria informativa privacy. Per maggiori informazioni consulta la <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy di Google</a> e la <a href="https://policies.google.com/technologies/cookies" target="_blank">Cookie Policy di Google</a>.</p>
+
+  <h2>Gestire il consenso</h2>
+  <p>Puoi modificare in qualsiasi momento la tua preferenza riguardo ai cookie utilizzando i pulsanti qui sotto. Il rifiuto dei cookie di terze parti potrebbe limitare la visualizzazione della mappa nella pagina Contatti.</p>
+
+  <div class="consent-btn">
+    <button class="btn-accept" onclick="accettaCookie()">Accetta i cookie</button>
+    <button class="btn-reject" onclick="rifiutaCookie()">Rifiuta i cookie non essenziali</button>
+  </div>
+
+  <div class="info-box" style="margin-top:32px;">
+    <p><strong>Come disabilitare i cookie dal browser</strong></p>
+    <p>Puoi anche gestire o disabilitare i cookie direttamente dalle impostazioni del tuo browser:</p>
+    <p>
+      <a href="https://support.apple.com/it-it/guide/safari/sfri11471/mac" target="_blank">Safari</a> ·
+      <a href="https://support.google.com/chrome/answer/95647" target="_blank">Chrome</a> ·
+      <a href="https://support.mozilla.org/it/kb/protezione-antitracciamento-avanzata-firefox" target="_blank">Firefox</a> ·
+      <a href="https://support.microsoft.com/it-it/microsoft-edge/eliminare-i-cookie-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank">Edge</a>
+    </p>
+  </div>
+
+  <h2>Contatti</h2>
+  <p>Per qualsiasi domanda relativa all'utilizzo dei cookie su questo sito puoi contattare il titolare del trattamento:</p>
+  <p>Dr. Davide Tucci · <a href="mailto:info@davidetuccioculista.it">info@davidetuccioculista.it</a> · <a href="tel:+393345753443">334 575 3443</a></p>
+
+  <p class="update">Ultimo aggiornamento: marzo 2026</p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../Logo-grande.jpg" alt="Dr. Davide Tucci"/>
+      <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigazione</h4>
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../servizi/index.html">Servizi</a></li>
+        <li><a href="../prenotazioni/index.html">Prenotazioni</a></li>
+        <li><a href="../contatti/index.html">Contatti</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legale</h4>
+      <ul>
+        <li><a href="../privacy/index.html">Privacy Policy</a></li>
+        <li><a href="index.html">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
+    <div style="display:flex;gap:20px;align-items:center;">
+      <a href="../privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Privacy Policy</a>
+      <a href="index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Cookie Policy</a>
+      <p>P.IVA 03913660548</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function accettaCookie() {
+    localStorage.setItem("cookieConsent", "accepted");
+    const banner = document.getElementById("cookieBanner");
+    if (banner) banner.style.display = "none";
+    alert("Preferenza salvata: cookie accettati.");
+  }
+  function rifiutaCookie() {
+    localStorage.setItem("cookieConsent", "rejected");
+    const banner = document.getElementById("cookieBanner");
+    if (banner) banner.style.display = "none";
+    alert("Preferenza salvata: cookie non essenziali rifiutati.");
+  }
+</script>
+
+</body>
+</html>
