@@ -56,96 +56,55 @@
     }
     .nav-cta:hover { background: #3a3a3c !important; }
 
-    /* Mobile nav elements — nascosti su desktop */
+    /* ── MOBILE NAV ── */
+    .nav-mobile-btn {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      padding: 8px; color: var(--black);
+    }
     .nav-mobile-right {
       display: none;
       justify-content: flex-end;
       align-items: center;
+      gap: 12px;
     }
-    .nav-hamburger {
-      background: none; border: none; cursor: pointer;
-      padding: 8px; color: var(--black); line-height: 0;
-    }
-
-    /* ── DRAWER OVERLAY ── */
-    .drawer-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      z-index: 1100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.32s ease;
-    }
-    .drawer-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    /* ── DRAWER ── */
-    .drawer {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: min(300px, 80vw);
-      background: var(--white);
-      z-index: 1200;
-      transform: translateX(100%);
-      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      box-shadow: -12px 0 60px rgba(0,0,0,0.16);
-    }
-    .drawer.open { transform: translateX(0); }
-
-    .drawer-header {
-      height: var(--nav-height);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      flex-shrink: 0;
-    }
-    .drawer-header img { height: 34px; }
-    .drawer-close {
-      background: rgba(0,0,0,0.05); border: none; cursor: pointer;
-      width: 34px; height: 34px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--black);
-      transition: background 0.2s;
-    }
-    .drawer-close:hover { background: rgba(0,0,0,0.1); }
-
-    .drawer-nav {
-      flex: 1;
-      padding: 8px 0;
-      overflow-y: auto;
-    }
-    .drawer-nav a {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 17px 28px;
-      font-size: 17px; font-weight: 400;
-      color: var(--black); text-decoration: none;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      transition: background 0.15s;
-    }
-    .drawer-nav a:hover { background: var(--light-gray); }
-    .drawer-nav a span { color: var(--gray); font-size: 18px; opacity: 0.45; }
-
-    .drawer-footer {
-      padding: 24px;
-      border-top: 1px solid rgba(0,0,0,0.08);
-      flex-shrink: 0;
-    }
-    .drawer-footer a {
-      display: block;
+    .nav-mobile-cta {
       background: var(--black); color: var(--white);
+      padding: 8px 16px; border-radius: 980px;
+      font-size: 13px; font-weight: 500;
       text-decoration: none;
-      padding: 16px 24px; border-radius: 980px;
-      font-size: 15px; font-weight: 600;
-      text-align: center;
-      transition: background 0.2s;
     }
-    .drawer-footer a:hover { background: #3a3a3c; }
+
+    /* Menu mobile a tendina */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--nav-height);
+      left: 0; right: 0;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      z-index: 999;
+      padding: 16px 24px 24px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      text-decoration: none; color: var(--black);
+      font-size: 17px; font-weight: 400;
+      padding: 13px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: block;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a.mobile-menu-cta {
+      background: var(--black); color: var(--white);
+      padding: 14px 24px; border-radius: 980px;
+      font-weight: 500; text-align: center;
+      margin-top: 12px; border: none;
+    }
 
     /* ── HERO ── */
     .hero {
@@ -202,8 +161,10 @@
 
     /* ── ABOUT ── */
     .about {
-      display: grid; grid-template-columns: 1fr 1fr;
-      min-height: 700px; background: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 700px;
+      background: var(--black);
     }
     .about-text-col {
       display: flex; flex-direction: column; justify-content: center;
@@ -225,20 +186,30 @@
       hyphens: auto; -webkit-hyphens: auto;
     }
     .about-body + .about-body { margin-top: 16px; }
-    .about-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.18); margin: 32px 0; }
+    .about-divider {
+      width: 40px; height: 1px;
+      background: rgba(255,255,255,0.18);
+      margin: 32px 0;
+    }
     .about-quote {
       font-size: 17px; font-style: italic; font-weight: 300;
-      color: rgba(255,255,255,0.88); line-height: 1.7; letter-spacing: -0.01em;
+      color: rgba(255,255,255,0.88); line-height: 1.7;
+      letter-spacing: -0.01em;
     }
     .about-photo-col { position: relative; overflow: hidden; }
     .about-photo-col img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: cover; object-position: top center; display: block;
+      object-fit: cover; object-position: top center;
+      display: block;
     }
     .about-photo-col::before {
       content: ""; position: absolute; inset: 0; z-index: 1;
-      background: linear-gradient(to right, var(--black) 0%, rgba(29,29,31,0.35) 18%, rgba(29,29,31,0) 40%);
+      background: linear-gradient(to right,
+        var(--black) 0%,
+        rgba(29,29,31,0.35) 18%,
+        rgba(29,29,31,0) 40%
+      );
     }
 
     /* ── SERVICES ── */
@@ -276,7 +247,10 @@
     /* ── REVIEWS ── */
     .reviews-section { padding: 100px 80px 80px; background: var(--black); }
     .reviews-section .section-eyebrow { color: rgba(255,255,255,0.38); }
-    .reviews-section .section-title { color: var(--white); font-size: clamp(36px, 3.8vw, 56px); }
+    .reviews-section .section-title {
+      color: var(--white);
+      font-size: clamp(36px, 3.8vw, 56px);
+    }
     .reviews-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 16px; margin-top: 52px;
@@ -297,8 +271,10 @@
     /* ── CTA ── */
     .cta-banner {
       background: var(--black);
-      margin: 60px 24px 80px; border-radius: 24px;
-      padding: 96px 64px; text-align: center;
+      margin: 60px 24px 80px;
+      border-radius: 24px;
+      padding: 96px 64px;
+      text-align: center;
     }
     .cta-banner .section-eyebrow { color: rgba(255,255,255,0.45); margin-bottom: 14px; }
     .cta-banner .section-title { color: var(--white); margin-bottom: 16px; }
@@ -335,8 +311,6 @@
     }
     .footer-bottom p { font-size: 12px; color: var(--gray); }
     .footer-bottom-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-    .footer-bottom-links a { font-size: 12px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
-    .footer-bottom-links a:hover { color: var(--black); }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -346,11 +320,12 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       /* Nav */
-      nav { padding: 0 20px; grid-template-columns: auto 1fr auto; }
+      nav { padding: 0 20px; }
       .nav-left, .nav-right { display: none; }
       .nav-logo { justify-self: start; }
       .nav-logo img { height: 38px; }
-      .nav-mobile-right { display: flex; }
+      .nav-mobile-right { display: flex; justify-self: end; }
+      nav { grid-template-columns: auto 1fr auto; }
 
       /* Hero */
       .hero { height: 88vh; }
@@ -376,36 +351,33 @@
 
       /* Footer */
       footer { padding: 40px 20px 28px; }
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .footer-brand { grid-column: 1 / -1; }
-      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .footer-brand { padding-bottom: 8px; }
+      .footer-cols-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
       .footer-bottom-links { gap: 16px; }
     }
   </style>
 </head>
 <body>
 
-<!-- DRAWER OVERLAY -->
-<div class="drawer-overlay" id="drawerOverlay"></div>
-
-<!-- DRAWER -->
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
-    <button class="drawer-close" id="drawerClose" aria-label="Chiudi menu">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-  <nav class="drawer-nav">
-    <a href="index.html">Home <span>›</span></a>
-    <a href="servizi/index.html">Servizi <span>›</span></a>
-    <a href="contatti/index.html">Contatti <span>›</span></a>
-  </nav>
-  <div class="drawer-footer">
-    <a href="prenotazioni/index.html">Prenota una visita</a>
-  </div>
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="servizi/index.html">Servizi</a>
+  <a href="contatti/index.html">Contatti</a>
+  <a href="prenotazioni/index.html" class="mobile-menu-cta">Prenota una visita</a>
 </div>
 
 <!-- NAV -->
@@ -425,10 +397,15 @@
       <li><a href="prenotazioni/index.html" class="nav-cta">Prenota</a></li>
     </ul>
   </div>
+  <!-- Mobile right: CTA + hamburger -->
   <div class="nav-mobile-right">
-    <button class="nav-hamburger" id="drawerToggle" aria-label="Apri menu">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+    <a href="prenotazioni/index.html" class="nav-mobile-cta">Prenota</a>
+    <button class="nav-mobile-btn" id="menuToggle" aria-label="Menu">
+      <svg id="iconMenu" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="iconClose" width="22" height="22" viewBox="0 0 22 22" fill="none" style="display:none;">
+        <path d="M4 4l14 14M18 4L4 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
@@ -561,37 +538,40 @@
       <img src="Logo-grande.jpg" alt="Dr. Davide Tucci" />
       <p>Medico Oculista<br/><a href="https://maps.google.com/?q=Via+Martiri+dei+Lager+58,+Perugia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(110,110,115,0.4);">Via Martiri dei Lager 58, Perugia</a></p>
     </div>
-    <div class="footer-col">
-      <h4>Navigazione</h4>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="servizi/index.html">Servizi</a></li>
-        <li><a href="prenotazioni/index.html">Prenotazioni</a></li>
-        <li><a href="contatti/index.html">Contatti</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Servizi</h4>
-      <ul>
-        <li><a href="servizi/index.html">Visita Oculistica</a></li>
-        <li><a href="servizi/index.html">Chirurgia Cataratta</a></li>
-        <li><a href="servizi/index.html">OCT Retinico</a></li>
-        <li><a href="servizi/index.html">Glaucoma</a></li>
-      </ul>
+    <!-- Su mobile questi due col vanno in griglia 2 colonne -->
+    <div class="footer-cols-row" style="display:contents;">
+      <div class="footer-col">
+        <h4>Navigazione</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="servizi/index.html">Servizi</a></li>
+          <li><a href="prenotazioni/index.html">Prenotazioni</a></li>
+          <li><a href="contatti/index.html">Contatti</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Servizi</h4>
+        <ul>
+          <li><a href="servizi/index.html">Visita Oculistica</a></li>
+          <li><a href="servizi/index.html">Chirurgia Cataratta</a></li>
+          <li><a href="servizi/index.html">OCT Retinico</a></li>
+          <li><a href="servizi/index.html">Glaucoma</a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
     <div class="footer-bottom-links">
-      <a href="privacy/index.html">Privacy Policy</a>
-      <a href="cookie/index.html">Cookie Policy</a>
+      <a href="privacy/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Privacy Policy</a>
+      <a href="cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Cookie Policy</a>
       <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
     </div>
   </div>
 </footer>
 
 <script>
-  // ── Cookie banner ──
+  // Cookie banner
   (function() {
     if (!localStorage.getItem("cookieConsent"))
       document.getElementById("cookieBanner").style.display = "block";
@@ -605,39 +585,35 @@
     document.getElementById("cookieBanner").style.display = "none";
   }
 
-  // ── Drawer ──
-  const drawer        = document.getElementById("drawer");
-  const drawerOverlay = document.getElementById("drawerOverlay");
-  const drawerToggle  = document.getElementById("drawerToggle");
-  const drawerClose   = document.getElementById("drawerClose");
+  // Mobile menu
+  const menuToggle = document.getElementById("menuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const iconMenu   = document.getElementById("iconMenu");
+  const iconClose  = document.getElementById("iconClose");
 
-  function openDrawer() {
-    drawer.classList.add("open");
-    drawerOverlay.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-  function closeDrawer() {
-    drawer.classList.remove("open");
-    drawerOverlay.classList.remove("open");
-    document.body.style.overflow = "";
-  }
-
-  drawerToggle.addEventListener("click", openDrawer);
-  drawerClose.addEventListener("click", closeDrawer);
-  drawerOverlay.addEventListener("click", closeDrawer);
-
-  // Chiudi drawer al click su un link interno
-  drawer.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", closeDrawer);
+  menuToggle.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.toggle("open");
+    iconMenu.style.display  = isOpen ? "none"  : "block";
+    iconClose.style.display = isOpen ? "block" : "none";
   });
 
-  // ── Reveal on scroll ──
+  // Chiudi menu al click su un link
+  mobileMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("open");
+      iconMenu.style.display  = "block";
+      iconClose.style.display = "none";
+    });
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll(".reveal");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) entry.target.classList.add("visible");
     });
   }, { threshold: 0.10 });
-  document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+  reveals.forEach(el => observer.observe(el));
 </script>
 
 </body>
