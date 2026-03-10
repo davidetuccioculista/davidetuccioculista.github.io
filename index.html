@@ -72,7 +72,7 @@
     .drawer-overlay.open { opacity: 1; pointer-events: all; }
 
     /* ── DRAWER ── */
-    .drawer {
+   .drawer {
       position: fixed;
       top: 0; left: 0; bottom: 0;
       width: min(280px, 78vw);
@@ -81,6 +81,7 @@
       transform: translateX(-100%);
       transition: transform 0.36s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex; flex-direction: column;
+      justify-content: flex-start;
       box-shadow: 8px 0 48px rgba(0,0,0,0.14);
     }
     .drawer.open { transform: translateX(0); }
@@ -106,9 +107,10 @@
 
     /* Voci di navigazione nel drawer */
     .drawer-nav {
-      flex: 1; overflow-y: auto;
-      padding: 8px 0;
-    }
+  flex: 0 0 auto;
+  overflow-y: auto;
+  padding: 8px 0;
+}
     .drawer-nav a {
       display: flex; align-items: center; justify-content: space-between;
       padding: 17px 24px;
