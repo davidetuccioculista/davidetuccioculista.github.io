@@ -9,9 +9,11 @@
     :root { --black: #1d1d1f; --gray: #6e6e73; --light-gray: #f5f5f7; --white: #ffffff; --nav-height: 64px; }
     html { scroll-behavior: smooth; }
     body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: var(--white); -webkit-font-smoothing: antialiased; }
+
+    /* ── NAV DESKTOP ── */
     nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); z-index: 1000; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 48px; }
-    .nav-left { display: flex; align-items: center; }
-    .nav-logo { justify-self: center; display: flex; align-items: center; }
+    .nav-left  { display: flex; align-items: center; }
+    .nav-logo  { justify-self: center; display: flex; align-items: center; }
     .nav-logo img { height: 44px; width: auto; }
     .nav-right { display: flex; justify-content: flex-end; }
     .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
@@ -19,24 +21,52 @@
     .nav-links a:hover { opacity: 1; }
     .nav-cta { background: var(--black); color: var(--white) !important; padding: 8px 18px; border-radius: 980px; font-weight: 500 !important; opacity: 1 !important; transition: background 0.2s !important; }
     .nav-cta:hover { background: #3a3a3c !important; }
+
+    .nav-mobile-left { display: none; }
+
+    /* ── DRAWER OVERLAY ── */
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.36); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 1100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* ── DRAWER ── */
+    .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(280px, 78vw); background: var(--white); z-index: 1200; transform: translateX(-100%); transition: transform 0.36s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: flex-start; box-shadow: 8px 0 48px rgba(0,0,0,0.14); }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header { height: var(--nav-height); display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 24px; border-bottom: 1px solid rgba(0,0,0,0.07); flex-shrink: 0; }
+    .drawer-header span { font-size: 13px; font-weight: 600; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; }
+    .drawer-close { width: 32px; height: 32px; border-radius: 50%; background: var(--light-gray); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--black); transition: background 0.2s; }
+    .drawer-close:hover { background: #e0e0e5; }
+    .drawer-nav { flex: 0 0 auto; overflow-y: auto; padding: 8px 0; }
+    .drawer-nav a { display: flex; align-items: center; justify-content: space-between; padding: 17px 24px; font-size: 17px; font-weight: 400; color: var(--black); text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.15s; }
+    .drawer-nav a:last-child { border-bottom: none; }
+    .drawer-nav a:hover { background: var(--light-gray); }
+    .drawer-nav a .arrow { color: var(--gray); font-size: 17px; opacity: 0.35; }
+    .drawer-footer { padding: 16px 24px 28px; border-top: 1px solid rgba(0,0,0,0.07); flex-shrink: 0; }
+    .drawer-cta { display: flex; align-items: center; justify-content: center; background: var(--black); color: var(--white); text-decoration: none; padding: 17px 24px; border-radius: 16px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.2s, transform 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.18); }
+    .drawer-cta:hover { background: #2d2d2f; transform: translateY(-1px); }
+
+    /* ── HERO ── */
     .hero { padding: calc(var(--nav-height) + 80px) 24px 60px; text-align: center; max-width: 720px; margin: 0 auto; border-bottom: 1px solid rgba(0,0,0,0.06); }
     .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin-bottom: 16px; display: block; }
     .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
     .hero p { font-size: 15px; color: var(--gray); margin-top: 16px; line-height: 1.65; }
+
+    /* ── DOC ── */
     .doc { max-width: 720px; margin: 0 auto; padding: 64px 24px 120px; }
     .doc h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--black); margin: 48px 0 14px; }
     .doc h2:first-child { margin-top: 0; }
-    .doc p { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 14px; }
+    .doc p { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 14px; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
     .doc ul { padding-left: 20px; margin-bottom: 14px; }
-    .doc ul li { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 6px; }
+    .doc ul li { font-size: 15px; color: #3a3a3c; line-height: 1.8; margin-bottom: 6px; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
     .doc a { color: var(--black); }
     .doc .info-box { background: var(--light-gray); border-radius: 16px; padding: 24px 28px; margin: 32px 0; }
-    .doc .info-box p { margin-bottom: 6px; font-size: 14px; }
+    .doc .info-box p { margin-bottom: 6px; font-size: 14px; text-align: left; hyphens: none; -webkit-hyphens: none; }
     .doc .info-box p:last-child { margin-bottom: 0; }
     .doc .info-box strong { color: var(--black); }
-    .doc .update { font-size: 13px; color: var(--gray); margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.08); }
+    .doc .update { font-size: 13px; color: var(--gray); margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.08); text-align: left; }
+
+    /* ── FOOTER ── */
     footer { border-top: 1px solid rgba(0,0,0,0.08); padding: 52px 80px 36px; }
-    .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .footer-inner { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(0,0,0,0.08); }
     .footer-brand img { height: 32px; margin-bottom: 14px; display: block; }
     .footer-brand p { font-size: 13px; color: var(--gray); line-height: 1.8; }
     .footer-brand a { color: inherit; }
@@ -47,12 +77,59 @@
     .footer-col ul li a:hover { color: var(--black); }
     .footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; flex-wrap: wrap; gap: 12px; }
     .footer-bottom p { font-size: 12px; color: var(--gray); }
-    @media (max-width: 768px) { nav { padding: 0 20px; } .nav-left, .nav-right { display: none; } .nav-logo img { height: 38px; } footer { padding: 40px 24px 28px; } .footer-inner { grid-template-columns: 1fr 1fr; } }
+    .footer-bottom-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .footer-bottom-links a { font-size: 12px; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+    .footer-bottom-links a:hover { color: var(--black); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; grid-template-columns: 1fr auto 1fr; }
+      .nav-left, .nav-right { display: none; }
+      .nav-logo { justify-self: center; }
+      .nav-logo img { height: 38px; }
+      .nav-mobile-left { display: flex; align-items: center; justify-content: flex-start; }
+      .nav-hamburger { background: none; border: none; cursor: pointer; padding: 8px 8px 8px 0; color: var(--black); line-height: 0; }
+      footer { padding: 40px 20px 28px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .footer-bottom-links { gap: 16px; }
+    }
   </style>
 </head>
 <body>
 
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span>Menu</span>
+    <button class="drawer-close" id="drawerClose" aria-label="Chiudi menu">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="drawer-nav">
+    <a href="../index.html">Home <span class="arrow">›</span></a>
+    <a href="../servizi/index.html">Servizi <span class="arrow">›</span></a>
+    <a href="../contatti/index.html">Contatti <span class="arrow">›</span></a>
+  </div>
+  <div class="drawer-footer">
+    <a href="../prenotazioni/index.html" class="drawer-cta">Prenota una visita</a>
+  </div>
+</div>
+
+<!-- NAV -->
 <nav>
+  <div class="nav-mobile-left">
+    <button class="nav-hamburger" id="drawerToggle" aria-label="Apri menu">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
   <div class="nav-left">
     <ul class="nav-links">
       <li><a href="../index.html">Home</a></li>
@@ -70,12 +147,14 @@
   </div>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
   <span class="eyebrow">Informativa ai sensi dell'art. 13 GDPR</span>
   <h1>Privacy Policy</h1>
   <p>Come trattiamo i tuoi dati personali su questo sito.</p>
 </div>
 
+<!-- DOC -->
 <div class="doc">
 
   <div class="info-box">
@@ -136,6 +215,21 @@
   <p class="update">Ultimo aggiornamento: marzo 2026</p>
 </div>
 
+<!-- COOKIE BANNER -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;width:calc(100% - 48px);max-width:680px;">
+  <div style="background:rgba(28,28,30,0.92);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-radius:20px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 8px 40px rgba(0,0,0,0.28);">
+    <div style="flex:1;min-width:200px;">
+      <p style="font-size:14px;font-weight:600;color:#ffffff;margin-bottom:4px;">Questo sito utilizza cookie</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;">Utilizziamo cookie tecnici e di terze parti (Google Maps) per il corretto funzionamento del sito. <a href="../cookie/index.html" style="color:rgba(255,255,255,0.85);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);">Cookie Policy</a></p>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button onclick="rifiutaCookie()" style="background:rgba(255,255,255,0.12);color:#ffffff;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">Rifiuta</button>
+      <button onclick="accettaCookie()" style="background:#ffffff;color:#1d1d1f;border:none;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Accetta</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -151,23 +245,39 @@
         <li><a href="../contatti/index.html">Contatti</a></li>
       </ul>
     </div>
-    <div class="footer-col">
-      <h4>Legale</h4>
-      <ul>
-        <li><a href="index.html">Privacy Policy</a></li>
-        <li><a href="../cookie/index.html">Cookie Policy</a></li>
-      </ul>
-    </div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 Dr. Davide Tucci — Medico Oculista. Tutti i diritti riservati.</p>
-    <div style="display:flex;gap:20px;align-items:center;">
-      <a href="index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Privacy Policy</a>
-      <a href="../cookie/index.html" style="font-size:12px;color:var(--gray);text-decoration:none;">Cookie Policy</a>
-      <p>P.IVA 03913660548</p>
+    <div class="footer-bottom-links">
+      <a href="index.html">Privacy Policy</a>
+      <a href="../cookie/index.html">Cookie Policy</a>
+      <p style="font-size:12px;color:var(--gray);">P.IVA 03913660548</p>
     </div>
   </div>
 </footer>
 
+<script>
+  // ── Cookie ──
+  (function() {
+    if (!localStorage.getItem("cookieConsent"))
+      document.getElementById("cookieBanner").style.display = "block";
+  })();
+  function accettaCookie() { localStorage.setItem("cookieConsent", "accepted"); document.getElementById("cookieBanner").style.display = "none"; }
+  function rifiutaCookie() { localStorage.setItem("cookieConsent", "rejected"); document.getElementById("cookieBanner").style.display = "none"; }
+
+  // ── Drawer ──
+  const drawer       = document.getElementById("drawer");
+  const overlay      = document.getElementById("drawerOverlay");
+  const drawerToggle = document.getElementById("drawerToggle");
+  const drawerClose  = document.getElementById("drawerClose");
+
+  function openDrawer()  { drawer.classList.add("open"); overlay.classList.add("open"); document.body.style.overflow = "hidden"; }
+  function closeDrawer() { drawer.classList.remove("open"); overlay.classList.remove("open"); document.body.style.overflow = ""; }
+
+  drawerToggle.addEventListener("click", openDrawer);
+  drawerClose.addEventListener("click", closeDrawer);
+  overlay.addEventListener("click", closeDrawer);
+  drawer.querySelectorAll("a").forEach(a => a.addEventListener("click", closeDrawer));
+</script>
 </body>
 </html>
