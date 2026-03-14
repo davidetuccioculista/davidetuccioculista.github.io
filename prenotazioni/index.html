@@ -717,18 +717,6 @@ async function caricaSlot() {
     const allPren = await ckQuery("PrenotazioneWeb");
     const durataMs = durata * 60000;
     const STEP_MS  = 5 * 60000;
-
-    // Prenotazioni del giorno — confronto solo per data, senza filtro ref
-    const prenotateGiorno = allPren
-      .filter(r => {
-        const ts = r.fields.dataOra?.value;
-        return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
-      })
-      .map(r => ({
-        inizio: r.fields.dataOra.value,
-        fine:   r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
-      }));
-
     const slots = [];
 
     for (const seduta of seduteGiorno) {
@@ -736,12 +724,23 @@ async function caricaSlot() {
       const fineMs   = seduta.fields.oraFine?.value;
       if (!inizioMs || !fineMs) continue;
 
+      // Filtro per fascia oraria assoluta della seduta — come nell'originale che funzionava
+      const prenotate = allPren
+        .filter(r => {
+          const ts = r.fields.dataOra?.value;
+          return typeof ts === "number" && ts >= inizioMs && ts < fineMs;
+        })
+        .map(r => ({
+          inizio: r.fields.dataOra.value,
+          fine:   r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
+        }));
+
       let cur = inizioMs;
       let lastSlotFine = 0;
 
       while (cur + durataMs <= fineMs) {
         const slotFine = cur + durataMs;
-        const busy = prenotateGiorno.some(p => cur < p.fine && slotFine > p.inizio);
+        const busy = prenotate.some(p => cur < p.fine && slotFine > p.inizio);
 
         if (!busy && cur >= lastSlotFine) {
           slots.push({ ts: cur });
