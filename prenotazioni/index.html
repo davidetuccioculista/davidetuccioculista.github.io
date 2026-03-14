@@ -723,7 +723,10 @@ async function caricaSlot() {
       const inizioMs = seduta.fields.oraInizio?.value;
       const fineMs   = seduta.fields.oraFine?.value;
       if (!inizioMs || !fineMs) continue;
-
+console.log("oraInizio:", inizioMs, new Date(inizioMs));
+  console.log("oraFine:", fineMs, new Date(fineMs));
+  console.log("allPren count:", allPren.length);
+  console.log("prima pren dataOra:", allPren[0]?.fields?.dataOra?.value, new Date(allPren[0]?.fields?.dataOra?.value));
       // Filtro per fascia oraria assoluta della seduta — come nell'originale che funzionava
       const prenotate = allPren
         .filter(r => {
