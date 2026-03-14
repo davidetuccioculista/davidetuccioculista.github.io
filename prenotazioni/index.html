@@ -693,8 +693,10 @@ function checkStep2() {
 
 async function caricaSlot() {
   const container = document.getElementById("slotsContainer");
-  const dateKey = toDateKey(state.dataSelezionata);
-  const durata  = state.prestazioneSelezionata?.fields?.durata?.value || 30;
+  const dateKey   = toDateKey(state.dataSelezionata);
+  const durata    = state.prestazioneSelezionata?.fields?.durata?.value || 30;
+  const durataMs  = durata * 60000;
+  const STEP_MS   = 5 * 60000;
 
   document.getElementById("slotsTitle").textContent = "Orari disponibili";
   document.getElementById("slotsSubtitle").textContent =
@@ -704,50 +706,69 @@ async function caricaSlot() {
   container.innerHTML = `<div class="loading-slots"><div class="spinner"></div>Caricamento orari…</div>`;
 
   try {
+    // --- 1. Filtra le sedute del giorno selezionato ---
     const seduteGiorno = state.sedute.filter(r => {
       const ts = r.fields.data?.value;
       return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
     });
+
+    console.log("📅 seduteGiorno:", seduteGiorno.length, seduteGiorno);
 
     if (seduteGiorno.length === 0) {
       container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessuna seduta disponibile.</p>`;
       return;
     }
 
+    // --- 2. Carica tutte le prenotazioni ---
     const allPren = await ckQuery("PrenotazioneWeb");
-    const durataMs = durata * 60000;
-    const STEP_MS  = 5 * 60000;
+    console.log("📋 allPren:", allPren.length, allPren);
+
     const slots = [];
 
     for (const seduta of seduteGiorno) {
-      const inizioMs = seduta.fields.oraInizio?.value;
-      const fineMs   = seduta.fields.oraFine?.value;
-      if (!inizioMs || !fineMs) continue;
-console.log("oraInizio:", inizioMs, new Date(inizioMs));
-  console.log("oraFine:", fineMs, new Date(fineMs));
-  console.log("allPren count:", allPren.length);
-  console.log("prima pren dataOra:", allPren[0]?.fields?.dataOra?.value, new Date(allPren[0]?.fields?.dataOra?.value));
-      // Filtro per fascia oraria assoluta della seduta — come nell'originale che funzionava
+      // Normalizza: CloudKit può dare secondi invece di ms
+      let inizioMs = seduta.fields.oraInizio?.value;
+      let fineMs   = seduta.fields.oraFine?.value;
+
+      console.log("⏰ Raw oraInizio:", inizioMs, "| oraFine:", fineMs);
+
+      if (!inizioMs || !fineMs) {
+        console.warn("⚠️ Seduta senza oraInizio/oraFine, skip:", seduta);
+        continue;
+      }
+
+      // Se il valore è in secondi (< anno 2100 in ms = 4102444800000), converti
+      if (inizioMs < 1_000_000_000_000) inizioMs *= 1000;
+      if (fineMs   < 1_000_000_000_000) fineMs   *= 1000;
+
+      console.log("✅ oraInizio:", new Date(inizioMs).toLocaleTimeString("it-IT"), "| oraFine:", new Date(fineMs).toLocaleTimeString("it-IT"));
+
+      // --- 3. Prenotazioni che cadono in questa fascia ---
       const prenotate = allPren
         .filter(r => {
-          const ts = r.fields.dataOra?.value;
-          return typeof ts === "number" && ts >= inizioMs && ts < fineMs;
+          let ts = r.fields.dataOra?.value;
+          if (!ts || typeof ts !== "number") return false;
+          if (ts < 1_000_000_000_000) ts *= 1000;
+          return ts >= inizioMs && ts < fineMs;
         })
-        .map(r => ({
-          inizio: r.fields.dataOra.value,
-          fine:   r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
-        }));
+        .map(r => {
+          let inizio = r.fields.dataOra.value;
+          if (inizio < 1_000_000_000_000) inizio *= 1000;
+          const fine = inizio + ((r.fields.durata?.value || 30) * 60000);
+          return { inizio, fine };
+        });
 
+      console.log("🔒 Slot già prenotati in fascia:", prenotate.length, prenotate);
+
+      // --- 4. Genera gli slot liberi ---
       let cur = inizioMs;
-      let lastSlotFine = 0;
 
       while (cur + durataMs <= fineMs) {
         const slotFine = cur + durataMs;
         const busy = prenotate.some(p => cur < p.fine && slotFine > p.inizio);
 
-        if (!busy && cur >= lastSlotFine) {
-          slots.push({ ts: cur });
-          lastSlotFine = slotFine;
+        if (!busy) {
+          slots.push({ ts: cur, sedutaRef: seduta.recordName });
           cur += durataMs;
         } else {
           cur += STEP_MS;
@@ -756,6 +777,7 @@ console.log("oraInizio:", inizioMs, new Date(inizioMs));
     }
 
     state.slots = slots;
+    console.log("🟢 Slot totali generati:", slots.length);
 
     if (slots.length === 0) {
       container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile per questa prestazione.</p>`;
@@ -772,10 +794,11 @@ console.log("oraInizio:", inizioMs, new Date(inizioMs));
       `</div>`;
 
   } catch(e) {
+    console.error("❌ Errore caricaSlot:", e);
     container.innerHTML = `<p style="color:var(--gray);font-size:14px;">Errore: ${e.message}</p>`;
-    console.error(e);
   }
 }
+
   function selezionaSlot(idx) {
   document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`slot-${idx}`).classList.add("selected");
