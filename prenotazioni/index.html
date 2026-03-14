@@ -714,53 +714,56 @@ async function caricaSlot() {
       return;
     }
 
-    // Fetch prenotazioni esistenti
     const allPren = await ckQuery("PrenotazioneWeb");
-
-    // Costruisci slot a intervalli fissi di `durata` per ogni seduta
     const durataMs = durata * 60000;
+    const STEP_MS  = 5 * 60000;
+
+    // Prenotazioni del giorno — confronto solo per data, senza filtro ref
+    const prenotateGiorno = allPren
+      .filter(r => {
+        const ts = r.fields.dataOra?.value;
+        return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
+      })
+      .map(r => ({
+        inizio: r.fields.dataOra.value,
+        fine:   r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
+      }));
+
     const slots = [];
 
     for (const seduta of seduteGiorno) {
       const inizioMs = seduta.fields.oraInizio?.value;
       const fineMs   = seduta.fields.oraFine?.value;
-      const refName  = seduta.recordName;
       if (!inizioMs || !fineMs) continue;
 
-      // Prenotazioni di QUESTA seduta con inizio+fine reali
-      const occupate = allPren
-        .filter(r => {
-          const ref = getRefName(r.fields.sedutaWebRef);
-          return ref === refName;
-        })
-        .map(r => ({
-          inizio: r.fields.dataOra?.value,
-          fine:   r.fields.dataOra?.value + ((r.fields.durata?.value || 30) * 60000)
-        }));
-
       let cur = inizioMs;
+      let lastSlotFine = 0;
+
       while (cur + durataMs <= fineMs) {
         const slotFine = cur + durataMs;
-        // Slot occupato se si sovrappone a qualsiasi prenotazione esistente
-        const busy = occupate.some(p => cur < p.fine && slotFine > p.inizio);
-        slots.push({ ts: cur, busy });
-        cur += durataMs; // step = durata della prestazione selezionata (come prima)
+        const busy = prenotateGiorno.some(p => cur < p.fine && slotFine > p.inizio);
+
+        if (!busy && cur >= lastSlotFine) {
+          slots.push({ ts: cur });
+          lastSlotFine = slotFine;
+          cur += durataMs;
+        } else {
+          cur += STEP_MS;
+        }
       }
     }
 
     state.slots = slots;
 
     if (slots.length === 0) {
-      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile.</p>`;
+      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile per questa prestazione.</p>`;
       return;
     }
 
     const fmt = ts => new Date(ts).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     container.innerHTML = `<div class="slots-grid">` +
       slots.map((s, i) =>
-        `<button class="slot-btn${s.busy ? " busy" : ""}"
-          ${s.busy ? "disabled" : `onclick="selezionaSlot(${i})"`}
-          id="slot-${i}">
+        `<button class="slot-btn" onclick="selezionaSlot(${i})" id="slot-${i}">
           ${fmt(s.ts)}
         </button>`
       ).join("") +
@@ -771,8 +774,6 @@ async function caricaSlot() {
     console.error(e);
   }
 }
-
-
   function selezionaSlot(idx) {
   document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`slot-${idx}`).classList.add("selected");
