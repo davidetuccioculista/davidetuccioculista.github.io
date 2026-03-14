@@ -695,62 +695,87 @@ async function caricaSlot() {
   const container = document.getElementById("slotsContainer");
   const dateKey = toDateKey(state.dataSelezionata);
   const durata  = state.prestazioneSelezionata?.fields?.durata?.value || 30;
+
   document.getElementById("slotsTitle").textContent = "Orari disponibili";
   document.getElementById("slotsSubtitle").textContent =
-    state.dataSelezionata.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}) +
+    state.dataSelezionata.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }) +
     " · " + (state.prestazioneSelezionata?.fields?.nome?.value || "");
+
   container.innerHTML = `<div class="loading-slots"><div class="spinner"></div>Caricamento orari…</div>`;
+
   try {
+    // Sedute del giorno per la sede selezionata
     const seduteGiorno = state.sedute.filter(r => {
       const ts = r.fields.data?.value;
       return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
     });
-    let prenotate = [];
-    try {
-      const allPren = await ckQuery("PrenotazioneWeb");
-      const inizioMs = new Date(dateKey + "T00:00:00").getTime();
-      const fineMs   = new Date(dateKey + "T23:59:59").getTime();
-      prenotate = allPren
-        .filter(r => {
-          const ts = r.fields.dataOra?.value;
-          return typeof ts === "number" && ts >= inizioMs && ts <= fineMs;
-        })
-        .map(r => ({
-          inizio: r.fields.dataOra.value,
-          fine: r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
-        }));
-    } catch(e) { console.warn("Prenotazioni non caricate:", e); }
+    if (seduteGiorno.length === 0) {
+      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessuna seduta disponibile.</p>`;
+      return;
+    }
+
+    // Carica tutte le prenotazioni esistenti (pending + confermata)
+    const allPren = await ckQuery("PrenotazioneWeb");
+    const sedutaNames = new Set(seduteGiorno.map(r => r.recordName));
+
+    // Prenotazioni occupate per questa seduta — con inizio e fine reali
+    const occupate = allPren
+      .filter(r => {
+        const ts  = r.fields.dataOra?.value;
+        const ref = getRefName(r.fields.sedutaWebRef);
+        return typeof ts === "number" && ref && sedutaNames.has(ref);
+      })
+      .map(r => ({
+        inizio: r.fields.dataOra.value,
+        fine:   r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
+      }));
+
+    // Genera slot a intervalli di 5 minuti (granularità minima)
+    // per ogni finestra oraria di ogni seduta del giorno
+    const STEP_MS = 5 * 60000; // 5 minuti
+    const durataMs = durata * 60000;
     const slots = [];
-    const now = new Date();
+    const seen = new Set();
+
     for (const seduta of seduteGiorno) {
-      const oraInizioTs = seduta.fields.oraInizio?.value;
-      const oraFineTs   = seduta.fields.oraFine?.value;
-      if (!oraInizioTs || !oraFineTs) continue;
-      const oraInizioD = new Date(oraInizioTs);
-      const oraFineD   = new Date(oraFineTs);
-      let cur = new Date(state.dataSelezionata);
-      cur.setHours(oraInizioD.getHours(), oraInizioD.getMinutes(), 0, 0);
-      const fine = new Date(state.dataSelezionata);
-      fine.setHours(oraFineD.getHours(), oraFineD.getMinutes(), 0, 0);
-      while (cur < fine) {
-        const endSlot = new Date(cur.getTime() + durata * 60000);
-        if (endSlot <= fine) {
-        const slotInizio = cur.getTime();
-        const slotFine   = slotInizio + (durata * 60000);
-        const isBusy = prenotate.some(p => slotInizio < p.fine && slotFine > p.inizio);
-          slots.push({ dataOra: new Date(cur), sedutaRef: seduta.recordName, durata, busy: isBusy || cur <= now });
+      const inizioMs = seduta.fields.oraInizio?.value;
+      const fineMs   = seduta.fields.oraFine?.value;
+      if (!inizioMs || !fineMs) continue;
+
+      let cur = inizioMs;
+      while (cur + durataMs <= fineMs) {
+        const key = cur.toString();
+        if (!seen.has(key)) {
+          seen.add(key);
+          // Slot occupato se si sovrappone a qualsiasi prenotazione esistente
+          const slotFine = cur + durataMs;
+          const busy = occupate.some(p => cur < p.fine && slotFine > p.inizio);
+          slots.push({ ts: cur, busy });
         }
-        cur = new Date(cur.getTime() + durata * 60000);
+        cur += STEP_MS;
       }
     }
-    state._slots = slots;
-    if (slots.length === 0) { container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessuno slot disponibile per questa data.</p>`; return; }
-    container.innerHTML = `<div class="slots-grid">` + slots.map((s,i) => {
-      const h = String(s.dataOra.getHours()).padStart(2,"0");
-      const m = String(s.dataOra.getMinutes()).padStart(2,"0");
-      const cls = "slot-btn" + (s.busy ? " busy" : "");
-      return `<button class="${cls}" id="slot-${i}" ${s.busy ? "" : `onclick="selezionaSlot(${i})"`}>${h}:${m}</button>`;
-    }).join("") + `</div>`;
+
+    // Ordina per orario
+    slots.sort((a, b) => a.ts - b.ts);
+
+    if (slots.length === 0) {
+      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile per questa prestazione.</p>`;
+      return;
+    }
+
+    // Render bottoni
+    const fmt = ts => new Date(ts).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    container.innerHTML = `<div class="slots-grid">` +
+      slots.map((s, i) =>
+        `<button class="slot-btn${s.busy ? " busy" : ""}" ${s.busy ? "disabled" : `onclick="selezionaSlot(${i})"`} id="slot-${i}">
+          ${fmt(s.ts)}
+        </button>`
+      ).join("") +
+      `</div>`;
+
+    state.slots = slots;
+
   } catch(e) {
     container.innerHTML = `<p style="color:var(--gray);font-size:14px;">Errore: ${e.message}</p>`;
     console.error(e);
