@@ -711,8 +711,14 @@ async function caricaSlot() {
       const inizioMs = new Date(dateKey + "T00:00:00").getTime();
       const fineMs   = new Date(dateKey + "T23:59:59").getTime();
       prenotate = allPren
-        .filter(r => { const ts = r.fields.dataOra?.value; return typeof ts === "number" && ts >= inizioMs && ts <= fineMs; })
-        .map(r => r.fields.dataOra.value);
+        .filter(r => {
+          const ts = r.fields.dataOra?.value;
+          return typeof ts === "number" && ts >= inizioMs && ts <= fineMs;
+        })
+        .map(r => ({
+          inizio: r.fields.dataOra.value,
+          fine: r.fields.dataOra.value + ((r.fields.durata?.value || 30) * 60000)
+        }));
     } catch(e) { console.warn("Prenotazioni non caricate:", e); }
     const slots = [];
     const now = new Date();
@@ -729,7 +735,9 @@ async function caricaSlot() {
       while (cur < fine) {
         const endSlot = new Date(cur.getTime() + durata * 60000);
         if (endSlot <= fine) {
-          const isBusy = prenotate.some(p => Math.abs(p - cur.getTime()) < durata * 60000);
+        const slotInizio = cur.getTime();
+        const slotFine   = slotInizio + (durata * 60000);
+        const isBusy = prenotate.some(p => slotInizio < p.fine && slotFine > p.inizio);
           slots.push({ dataOra: new Date(cur), sedutaRef: seduta.recordName, durata, busy: isBusy || cur <= now });
         }
         cur = new Date(cur.getTime() + durata * 60000);
