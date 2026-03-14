@@ -714,8 +714,10 @@ async function caricaSlot() {
       return;
     }
 
+    // Fetch prenotazioni esistenti
     const allPren = await ckQuery("PrenotazioneWeb");
-    const STEP_MS  = 5 * 60000;   // 5 min — granularità ricerca slot libero
+
+    // Costruisci slot a intervalli fissi di `durata` per ogni seduta
     const durataMs = durata * 60000;
     const slots = [];
 
@@ -725,44 +727,40 @@ async function caricaSlot() {
       const refName  = seduta.recordName;
       if (!inizioMs || !fineMs) continue;
 
-      // Prenotazioni esistenti per questa seduta, con inizio e fine reali
+      // Prenotazioni di QUESTA seduta con inizio+fine reali
       const occupate = allPren
-        .filter(r => getRefName(r.fields.sedutaWebRef) === refName)
+        .filter(r => {
+          const ref = getRefName(r.fields.sedutaWebRef);
+          return ref === refName;
+        })
         .map(r => ({
           inizio: r.fields.dataOra?.value,
           fine:   r.fields.dataOra?.value + ((r.fields.durata?.value || 30) * 60000)
         }));
 
       let cur = inizioMs;
-      let lastSlotFine = 0; // fine dell'ultimo slot libero aggiunto
-
       while (cur + durataMs <= fineMs) {
         const slotFine = cur + durataMs;
+        // Slot occupato se si sovrappone a qualsiasi prenotazione esistente
         const busy = occupate.some(p => cur < p.fine && slotFine > p.inizio);
-
-        if (!busy && cur >= lastSlotFine) {
-          // Slot libero e non sovrapposto al precedente → aggiungilo
-          slots.push({ ts: cur });
-          lastSlotFine = slotFine;
-          cur += durataMs; // prossimo candidato a distanza di durata intera
-        } else {
-          // Occupato o sovrapposto → avanza di 5 min per trovare il prossimo buco
-          cur += STEP_MS;
-        }
+        slots.push({ ts: cur, busy });
+        cur += durataMs; // step = durata della prestazione selezionata (come prima)
       }
     }
 
     state.slots = slots;
 
     if (slots.length === 0) {
-      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile per questa prestazione.</p>`;
+      container.innerHTML = `<p style="color:var(--gray);font-size:14px;padding:20px 0;">Nessun orario disponibile.</p>`;
       return;
     }
 
     const fmt = ts => new Date(ts).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     container.innerHTML = `<div class="slots-grid">` +
       slots.map((s, i) =>
-        `<button class="slot-btn" onclick="selezionaSlot(${i})" id="slot-${i}">
+        `<button class="slot-btn${s.busy ? " busy" : ""}"
+          ${s.busy ? "disabled" : `onclick="selezionaSlot(${i})"`}
+          id="slot-${i}">
           ${fmt(s.ts)}
         </button>`
       ).join("") +
@@ -774,7 +772,7 @@ async function caricaSlot() {
   }
 }
 
-function selezionaSlot(idx) {
+  function selezionaSlot(idx) {
   document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`slot-${idx}`).classList.add("selected");
   state.slotSelezionato = {
