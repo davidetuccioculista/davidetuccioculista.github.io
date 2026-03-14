@@ -724,16 +724,20 @@ async function caricaSlot() {
     };
 
     const prenDelGiorno = allPren
-      .filter(r => {
-        const ts = r.fields.dataOra?.value;
-        return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
-      })
-      .map(r => {
-        const inizio = toMinuti(r.fields.dataOra.value);
-        const fine   = inizio + (r.fields.durata?.value || 30);
-        return { inizio, fine };
-      });
+  .filter(r => {
+    const ts = r.fields.dataOra?.value;
+    return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
+  })
+  .map(r => {
+    const inizio = toMinuti(r.fields.dataOra.value);
+    const fine   = inizio + (r.fields.durata?.value || 30);
+    return { inizio, fine };
+  });
 
+// ← QUI
+console.log("dateKey:", dateKey);
+console.log("prenDelGiorno:", prenDelGiorno.length, prenDelGiorno);
+console.log("primo allPren dataOra:", allPren[0]?.fields?.dataOra?.value, new Date(allPren[0]?.fields?.dataOra?.value));
     for (const seduta of seduteGiorno) {
       const inizioMs = seduta.fields.oraInizio?.value;
       const fineMs   = seduta.fields.oraFine?.value;
