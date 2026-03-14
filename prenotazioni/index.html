@@ -785,9 +785,13 @@ async function caricaSlot() {
 function selezionaSlot(idx) {
   document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`slot-${idx}`).classList.add("selected");
-  state.slotSelezionato = state._slots[idx];
+  state.slotSelezionato = {
+    dataOra: new Date(state.slots[idx].ts),
+    durata:  state.prestazioneSelezionata?.fields?.durata?.value || 30
+  };
   document.getElementById("btn3Next").disabled = false;
 }
+
 
 function popolaRiepilogo() {
   const sede  = state.sedaSelezionata;
