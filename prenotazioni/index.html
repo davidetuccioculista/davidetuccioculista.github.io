@@ -308,7 +308,7 @@
   <div class="success-screen" id="successScreen">
     <div class="success-icon">✅</div>
     <h2>Prenotazione inviata!</h2>
-    <p>La tua richiesta è stata ricevuta.</p>
+    <p>La tua richiesta è stata ricevuta. Riceverai a breve una email di riepilogo.</p>
     <div style="margin: 28px auto; background: #f5f5f7; border-radius: 16px; padding: 20px 28px; max-width: 560px;">
       <p style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">Codice prenotazione</p>
       <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
@@ -387,7 +387,7 @@
       <div class="form-group"><label>Nome *</label><input type="text" id="fNome" placeholder="Mario" autocomplete="given-name"/></div>
       <div class="form-group"><label>Cognome *</label><input type="text" id="fCognome" placeholder="Rossi" autocomplete="family-name"/></div>
       <div class="form-group"><label>Telefono *</label><input type="tel" id="fTelefono" placeholder="333 123 4567" autocomplete="tel"/></div>
-      <div class="form-group"><label>Email</label><input type="email" id="fEmail" placeholder="mario@email.it" autocomplete="email"/></div>
+      <div class="form-group"><label>Email *</label><input type="email" id="fEmail" placeholder="mario@email.it" autocomplete="email" required/></div>
       <div class="form-group full"><label>Note (facoltativo)</label><textarea id="fNote" placeholder="Eventuali informazioni utili per il medico…"></textarea></div>
     </div>
     <div class="privacy-check" style="margin-top:16px;">
@@ -629,8 +629,8 @@ function renderCalendar() {
     }
     const click = (!isPast && isAvail && !state.giorniPieni.has(key)) ? `onclick="selezionaData('${key}')"` : "";
     html += `<div class="${cls}" ${click}>${d}</div>`;
-    grid.innerHTML = html;
   }
+  grid.innerHTML = html;
 }
 
 function prevMonth() { if(state.calMonth===0){state.calMonth=11;state.calYear--;}else state.calMonth--; renderCalendar(); }
@@ -717,28 +717,27 @@ async function caricaSlot() {
     const allPren = await ckQuery("PrenotazioneWeb");
     const slots   = [];
 
-    // Prenotazioni del giorno → converti in {inizio, fine} in minuti da mezzanotte
     const toMinuti = ts => {
       const d = new Date(ts);
       return d.getHours() * 60 + d.getMinutes();
     };
 
     const prenDelGiorno = allPren
-  .filter(r => {
-    const ts = r.fields.dataOra?.value;
-    return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
-  })
-  .map(r => {
-    const inizio = toMinuti(r.fields.dataOra.value);
-    const fine   = inizio + (r.fields.durata?.value || 30);
-    return { inizio, fine };
-  });
+      .filter(r => {
+        const ts = r.fields.dataOra?.value;
+        return typeof ts === "number" && toDateKey(new Date(ts)) === dateKey;
+      })
+      .map(r => {
+        const inizio = toMinuti(r.fields.dataOra.value);
+        const fine   = inizio + (r.fields.durata?.value || 30);
+        return { inizio, fine };
+      });
+
     for (const seduta of seduteGiorno) {
       const inizioMs = seduta.fields.oraInizio?.value;
       const fineMs   = seduta.fields.oraFine?.value;
       if (!inizioMs || !fineMs) continue;
 
-      // oraInizio/oraFine sono Date con data arbitraria → prendi solo HH:MM
       const inizioMin = toMinuti(inizioMs);
       const fineMin   = toMinuti(fineMs);
 
@@ -747,7 +746,6 @@ async function caricaSlot() {
         const slotFine = cur + durata;
         const busy = prenDelGiorno.some(p => cur < p.fine && slotFine > p.inizio);
         if (!busy) {
-          // Ricostruisci timestamp assoluto: data selezionata + ora slot
           const slotDate = new Date(state.dataSelezionata);
           slotDate.setHours(Math.floor(cur / 60), cur % 60, 0, 0);
           slots.push({ ts: slotDate.getTime(), sedutaRef: seduta.recordName });
@@ -773,17 +771,18 @@ async function caricaSlot() {
       `</div>`;
 
   } catch(e) {
-    console.error("❌ caricaSlot:", e);
+    console.error("caricaSlot:", e);
     container.innerHTML = `<p style="color:var(--gray);font-size:14px;">Errore: ${e.message}</p>`;
   }
 }
-  function selezionaSlot(idx) {
+
+function selezionaSlot(idx) {
   document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`slot-${idx}`).classList.add("selected");
   state.slotSelezionato = {
-    dataOra:    new Date(state.slots[idx].ts),
-    durata:     state.prestazioneSelezionata?.fields?.durata?.value || 30,
-    sedutaRef:  state.slots[idx].sedutaRef
+    dataOra:   new Date(state.slots[idx].ts),
+    durata:    state.prestazioneSelezionata?.fields?.durata?.value || 30,
+    sedutaRef: state.slots[idx].sedutaRef
   };
   document.getElementById("btn3Next").disabled = false;
 }
@@ -810,18 +809,39 @@ async function submitBooking() {
   const note    = document.getElementById("fNote").value.trim();
   const privacy = document.getElementById("privacyCheck").checked;
   const errEl   = document.getElementById("errorMsg");
+
   errEl.classList.remove("visible");
-  if (!nome || !cognome || !tel) { errEl.textContent = "Compila tutti i campi obbligatori (nome, cognome, telefono)."; errEl.classList.add("visible"); return; }
-  if (!privacy) { errEl.textContent = "Devi accettare il trattamento dei dati personali."; errEl.classList.add("visible"); return; }
+
+  if (!nome || !cognome || !tel || !email) {
+    errEl.textContent = "Compila tutti i campi obbligatori: nome, cognome, telefono, email.";
+    errEl.classList.add("visible");
+    return;
+  }
+
+  const emailValida = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!emailValida) {
+    errEl.textContent = "Inserisci un indirizzo email valido.";
+    errEl.classList.add("visible");
+    return;
+  }
+
+  if (!privacy) {
+    errEl.textContent = "Devi accettare il trattamento dei dati personali.";
+    errEl.classList.add("visible");
+    return;
+  }
+
   document.getElementById("btnSubmit").disabled = true;
   document.getElementById("submitState").style.display = "block";
+
   try {
     const slot  = state.slotSelezionato;
     const prest = state.prestazioneSelezionata?.fields;
     const sede  = state.sedaSelezionata;
-    const dataStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    const dataStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
     const random  = Math.random().toString(36).substring(2,6).toUpperCase();
     const codicePrenotazione = `VS-${dataStr}-${random}`;
+
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -833,8 +853,10 @@ async function submitBooking() {
         codicePrenotazione: codicePrenotazione
       })
     });
+
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Errore sconosciuto");
+
     document.getElementById("panel-4").style.display = "none";
     document.querySelector(".stepper").style.display = "none";
     document.getElementById("successCodice").textContent = codicePrenotazione;
